@@ -10,14 +10,18 @@ A primeira ideia foi tentar conectar via SSH com essas credenciais, mas não foi
 
 Como o enunciado sugere que é um sistema de banco de dados, a segunda aproximação envolveu verificar se o sistema é vulnerável a ataques de SQL Injection.
 
-Utilizando alguns dos payloads encontrados no repo, e baseado nas mensagens de erro, foi possível identificar que o engine usado no banco de dados era o SQLite.
+Utilizando alguns dos payloads encontrados no repo https://github.com/payloadbox/sql-injection-payload-list, e baseado nas mensagens de erro, foi possível identificar que o engine usado no banco de dados era o SQLite
 
+Testando o payload ' UNION SELECT 1+1' foi exibida uma mensagem indicando que existem filtros para algumas expressões e caracteres.
 
-https://github.com/payloadbox/sql-injection-payload-list
+Felizmente as expressões do SQLite não são case-sensitive, então ao tentar alterar os caracteres entre maiúsculos e minúsculos, conseguimos bypassar o filtro e executar as operações normalmente.
 
-Teste de um payload ' UNION SELECT 1+1' retornou o resultado: 2, indicando que o código estava sendo de fato executado pelo banco de dados.
+' UnIoN SeLeCt 1+1 '
 
-A partir daí, o foco é em enumerar as informações das tabelas
+retornou o resultado: 2, indicando que o código estava sendo de fato executado pelo banco de dados.
+
+A partir daí, o foco é em enumerar as informações das tabelas. Para isso, vamos prosseguir com o método de ataque utilizando as expressões UNION 
+https://portswigger.net/web-security/sql-injection/union-attacks
 
 Conforme a documentação do SQLite, disponível em https://www.sqlite.org/schematab.html Em todos os bancos de dados que utilizam essa engine, vai existir uma tabela que contém algumas 
 informações sobre todas as outras tabelas.
