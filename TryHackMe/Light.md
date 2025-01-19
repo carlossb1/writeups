@@ -18,7 +18,7 @@ Como o enunciado sugere que é um sistema de banco de dados, a segunda aproxima�
 
 Utilizando alguns dos payloads encontrados no [repositório do payloadbox](https://github.com/payloadbox/sql-injection-payload-list), e baseado nas mensagens de erro, foi possível identificar que o engine usado no banco de dados era o SQLite
 
-Testando o payload ' UNION SELECT 1+1' foi exibida uma mensagem indicando que existem filtros para algumas expressões e caracteres.
+Testando o payload `' UNION SELECT 1+1'` foi exibida uma mensagem indicando que existem filtros para algumas expressões e caracteres.
 
 Felizmente as expressões do SQLite não são case-sensitive, então ao tentar alternar os caracteres entre maiúsculos e minúsculos, conseguimos bypassar o filtro e executar as operações normalmente.
 
@@ -28,7 +28,7 @@ retornou o resultado: 2, indicando que o código estava sendo de fato executado 
 
 ![image](https://github.com/user-attachments/assets/67bc00e4-32bb-415c-8ba9-029551c7bca5)
 
-A partir daí, o foco é em enumerar as informações das tabelas. Para isso, vamos prosseguir com o método de ataque utilizando as expressões UNION [Referência PortSwigger](https://portswigger.net/web-security/sql-injection/union-attacks)
+A partir daí, o foco é em enumerar as informações das tabelas. Para isso, vamos prosseguir com o método de ataque utilizando as expressões `UNION` [SQL INJECTION UNION ATTACKS - PORTSWIGGER](https://portswigger.net/web-security/sql-injection/union-attacks)
 
 Conforme a [documentação](https://www.sqlite.org/schematab.html) do SQLite, em todos os bancos de dados que utilizam essa engine, vai existir uma tabela que contém algumas 
 informações sobre todas as outras tabelas.
@@ -70,10 +70,10 @@ Terceira coluna: username
 
 # Verificando os usernames
 `' UnIon SeLect username from admintable ' `
-*TryHackMeAdmin*
+user : *TryHackMeAdmin*
 
 `' UnIoN SeLeCt password from admintable where username = 'TryHackMeAdmin`
-*mamZtAuMlrsEy5bp6q17*
+senha : *mamZtAuMlrsEy5bp6q17*
 
 ![image](https://github.com/user-attachments/assets/5a91292a-f4e1-4713-94af-d967347c56c2)
 
@@ -81,10 +81,10 @@ Vamos tentar realizar o acesso via SSH com essas credenciais, mas novamente, nã
 
 ![image](https://github.com/user-attachments/assets/285923c5-f07a-46aa-bc91-a6c8b9176c98)
 
-Realizando uma nova consulta ao banco de usuários 
+Realizando uma nova consulta ao banco de usuários <br>
 `' UnIon SeLect username from admintable where username != 'TryHackMeAdmin`
 
-Olha ela aí!, encontramos o usuário *flag* agora vamos ver se a flag está na senha 
+Olha ela aí!, encontramos o usuário *flag* agora vamos ver se a flag está na senha <br>
 `' UnIoN SeLeCt password from admintable where username = 'flag`
 
 ![image](https://github.com/user-attachments/assets/cabcb408-fc4e-4a13-9cfa-4622a0c4a644)
