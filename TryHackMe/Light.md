@@ -1,7 +1,9 @@
 # Room - Light - TryHackMe 
+Autor: carlossb1\
+Level: Easy\
+Tópico: SQL Injection
 
-Level: Easy
-
+# Introdução
 ![image](https://github.com/user-attachments/assets/f22b9991-a50b-4283-9875-63043ec6dc2f)
 
 
