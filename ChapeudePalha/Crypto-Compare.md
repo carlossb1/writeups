@@ -58,4 +58,9 @@ Então podemos usar esse payload para obter a flag:
 
 
 ## Agradecimento
-Não poderia deixar de agradecer ao [@calilkhalil](https://github.com/calilkhalil) pela ajuda nesse e em outros desafios. Me ensinou muita coisa, e pra galera que curte CTF, vale a pena demais dar uma conferida nos repos dele.
+
+Um salve à toda a comunidade do Chapéu de Palha por disponibilizar os desafios e promover um movimento maneiro demais. Quem se interesa por tópicos de segurança da informação, pode chegar no insta dos caras que tem muita coisa legal: \
+[Instagram do Chapéu de Palha](https://www.instagram.com/chapeudepalhahackerclub/)
+
+Também Não poderia deixar de agradecer ao [@calilkhalil](https://github.com/calilkhalil) pela ajuda nesse e em outros desafios. Me ensinou muita coisa, e pra galera que curte CTF, vale a pena demais dar uma conferida nos repos dele.
+
