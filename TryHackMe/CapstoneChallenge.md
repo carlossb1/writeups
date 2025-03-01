@@ -9,7 +9,7 @@ Tópico: Linux Privilege Escalation
 Essa room está disponível no fim do módulo sobre escalação de privilégios no Linux.\
 Recebemos um usuário e senha para realizar login via SSH na máquina.
 
-User: leonard
+User: leonard\
 Password: Penny123 (lol)
 
 ## Enumeração
