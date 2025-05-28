@@ -8,7 +8,9 @@ Tópico: Web / Linux
 
 Essa room é bem simples, envolvendo transferência de arquivos via FTP para um diretório que está hospedando um servidor com backend em PHP, obtendo execução de código remoto e assim conseguindo acesso ao webserver.
 
-A parte de escalação de privilégio também é um cenário simples, vemos alguns arquivos suspeitos, e através da análise conseguimos obter a senha de um usuário, e após autenticação como as credenciais desse usuário, abusar de um script com permissões de root que faz chamadas à um script externo.
+A parte de escalação de privilégio também é um cenário simples, vemos alguns arquivos suspeitos, e através da análise conseguimos obter a senha de um usuário, e após autenticação como as credenciais desse usuário, abusar de um script com permissões de root que faz chamadas à um script editável.
+
+
 
 ## Enumeração
 
@@ -128,6 +130,5 @@ print.sh -> Script com permissões do nosso usuário, nos permitindo fazer ediç
 Para obtermos o conteúdo da flag do root, podemos simplesmente editar o script print.sh para copiar a flag e depois ler o seu conteúdo, e executar o planner.sh que irá fazer o chamado do nosso script malicioso.
 
 ![image](https://github.com/user-attachments/assets/754b4da6-d2fb-40d9-9722-f0b0f0e2feb8)
-
 
 
