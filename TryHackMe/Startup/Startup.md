@@ -26,7 +26,8 @@ Uma página web sem nada de interessante no primeiro momento.
 
 ![image](https://github.com/user-attachments/assets/360e0625-8a39-4121-ab20-0ed0d18f180b)
 
-Realizando uma varredura por diretórios, encontramos 
+Realizando uma varredura por diretórios, encontramos o diretório /files.
+
 ![image](https://github.com/user-attachments/assets/8d248236-f4f5-4a4f-ab3d-f92c2eba6f03)
 
 
@@ -52,11 +53,13 @@ Nosso arquivo aparece
 ![image](https://github.com/user-attachments/assets/5cbfa196-72b4-474d-88cf-148e0ccf4a48)
 
 
-Ao acessá-lo, vemos que nosso código foi executado, retornando a mensagem "Hello, world" conforme esperado. Agora podemos repetir esse passo, mas dessa vez utilizando o código de um shell reverso.
+Ao acessá-lo, vemos que nosso código foi executado, retornando a mensagem "Hello, world" conforme esperado.
 
 
 ![image](https://github.com/user-attachments/assets/9ac82ef2-c709-4fa0-b2a9-22e2a3de2793)
 
+
+Agora podemos repetir esse passo, mas dessa vez utilizando o código de um shell reverso.
 
 Utilizei o código do PentestMonkey [https://github.com/pentestmonkey/php-reverse-shell] 
 
@@ -81,12 +84,33 @@ Um arquivo pcapng - esse tipo de arquivo contém informações de capturas de tr
 ![image](https://github.com/user-attachments/assets/672c85f1-79fc-4dac-aae6-b3e4301022b3)
 
 
-Abrindo o arquivo com o tcpdump, podemos ver as comunicações realizadas durante a captura - algumas foram realizadas por protocolos não-criptografados, o que revela a senha de um dos usuários
+Utilizando a ferramente de preferência (wireshark, tcpdump, tshark), podemos visualizar as informações de conexão armazenadas no arquivo pcapng. Utilizando o tcpdump podemos ver que algumas dessas transmissões de dados foram realizadas por protocolos não-criptografados, o que revela a senha de um dos usuários em texto claro.
 
 Abertura do arquivo
+
 ![image](https://github.com/user-attachments/assets/385d489c-62a6-4f7c-bdc0-9019e47b5fd7)
 
 
-Credenciais em texto claro
 ![image](https://github.com/user-attachments/assets/a9e1dcb9-c77b-4b34-b785-20aba16bff48)
+
+Vamos tentar usar essas credenciais para autenticar como o usuário lennie
+
+![image](https://github.com/user-attachments/assets/c973d791-03e4-48b8-adee-aedec4e75059)
+
+Sucesso. Obtivemos acesso de usuário na máquina, e a flag user.txt
+
+## Obtendo a flag de root
+
+Diretório suspeito - scripts
+
+planner.sh -> Script com permissões de root, chamando um outro script com permissões do nosso usuário.
+print.sh -> Script com permissões do nosso usuário, nos permitindo fazer edição e alterando as operações que ele executa.
+
+![image](https://github.com/user-attachments/assets/27b30cde-6351-488f-a6fa-440203e8a55a)
+
+Para obtermos o conteúdo da flag do root, podemos simplesmente editar o script print.sh para copiar a flag e depois ler o seu conteúdo, e executar o planner.sh que irá fazer o chamado do nosso script malicioso.
+
+![image](https://github.com/user-attachments/assets/754b4da6-d2fb-40d9-9722-f0b0f0e2feb8)
+
+
 
