@@ -1,4 +1,4 @@
-# Room - CapstoneChallenge - TryHackMe 
+# Room - Startup - TryHackMe 
 Autor: carlossb1\
 Level: Easy\
 Tópico: Web / Linux
@@ -16,32 +16,37 @@ nmap -sC -sV para rodar os scripts padrão e retornar as informações de versã
 
 `nmap -sC -sV <IP DA MÁQUINA>`
 
-Algumas informações interessantes: o servidor FTP permite login com o usuário Anonymous, e o nmap já foi capaz de retornar os arquivos disponíveis no diretório.
+Algumas informações interessantes: quando usamos a flag -sC no nosso comando do nmap, um dos scripts (https://nmap.org/nsedoc/scripts/ftp-anon.html) realiza um teste nos servidores FTP identificados, para verificar se esses servidores permitem login com o usuário Anonymous. Esse é o caso do servidor FTP disponivel na máquina que estamos atacando.
+
 
 ![image](https://github.com/user-attachments/assets/e0877fcb-f129-4dbc-889b-115af3c0247c)
 
 
-Portas abertas: 21,22 e 80.
+Portas abertas: 21 (ftp) , 22 (ssh)  e 80 (http).
 
 ### Porta 80:
 Uma página web sem nada de interessante no primeiro momento.
 
 ![image](https://github.com/user-attachments/assets/360e0625-8a39-4121-ab20-0ed0d18f180b)
 
-Realizando uma varredura por diretórios, encontramos o diretório /files.\
+Realizando uma varredura por diretórios, encontramos o diretório /files.
 
 `gobuster dir -u <endereço da página> -w <wordlist com os diretórios para tentar conexão> -t <número de threads>`
 
 ![image](https://github.com/user-attachments/assets/8d248236-f4f5-4a4f-ab3d-f92c2eba6f03)
 
+Acessando o endereço: `http://<IP DA MÁQUINA>/files`, podemos ver um diretório contendo uma lista de arquivos.
+(Nesse caso, o conteúdo dos arquivos não era nada de interessante, então não vou abordar.)
 
 ![image](https://github.com/user-attachments/assets/397e98d9-a956-4a96-b50c-df2ca2a71a4d)
 
 
 
 
-### Porta 21
-Vamos ver o que temos no ftp
+### Porta 21:
+Vamos ver o que temos no ftp, realizando acesso como usuário Anonymous:
+User: Anonymous
+Password: em branco
 
 ![image](https://github.com/user-attachments/assets/1cfb29bf-c860-4890-b7d4-b8d4a8093265)
 
@@ -51,11 +56,12 @@ Vamos ver o que temos no ftp
 Sabendo que os conteúdos acessíveis via FTP estão sendo refletidos no webserver, podemos criar um PoC e enviá-lo via FTP para o servidor e fazer o teste de execução de código remoto.
 
 POC: \
-` <?php echo Hello, world!; ?> `
+` <?php echo "Hello, world!"; ?> `
 
 ![image](https://github.com/user-attachments/assets/880c8149-2609-4d14-842f-a8da1814e0d8)
 
-Nosso arquivo aparece
+Nosso arquivo já foi refletido na página web.
+
 
 ![image](https://github.com/user-attachments/assets/5cbfa196-72b4-474d-88cf-148e0ccf4a48)
 
