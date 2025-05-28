@@ -68,4 +68,25 @@ Acessando o arquivo, recebemos nossa shell reversa.
 
 ![image](https://github.com/user-attachments/assets/dbbf0b9c-645c-4af7-bb27-c518dbffca7b)
 
+Após uma estabilização básica inicial, enumeramos o diretório e vemos que nosso usário é dono de uma pasta -incidents- e um arquivo -recipe.txt- contendo o ingrediente especial que é: .... (1ª flag).
+
+![image](https://github.com/user-attachments/assets/9225b84e-028d-4630-9e1f-f2d610ea1ab7)
+
+## Obtendo user
+
+Vamos ver o que tem dentro da pasta incidents:
+
+Um arquivo pcapng - esse tipo de arquivo contém informações de capturas de tráfego de rede, então preferi transferir para minha máquina local para analisar mais facilmente.
+
+![image](https://github.com/user-attachments/assets/672c85f1-79fc-4dac-aae6-b3e4301022b3)
+
+
+Abrindo o arquivo com o tcpdump, podemos ver as comunicações realizadas durante a captura - algumas foram realizadas por protocolos não-criptografados, o que revela a senha de um dos usuários
+
+Abertura do arquivo
+![image](https://github.com/user-attachments/assets/385d489c-62a6-4f7c-bdc0-9019e47b5fd7)
+
+
+Credenciais em texto claro
+![image](https://github.com/user-attachments/assets/a9e1dcb9-c77b-4b34-b785-20aba16bff48)
 
