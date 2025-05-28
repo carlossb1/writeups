@@ -14,6 +14,8 @@ A parte de escalação de privilégio também é um cenário simples, vemos algu
 
 nmap -sC -sV para rodar os scripts padrão e retornar as informações de versão dos serviços em execução
 
+`nmap -sC -sV <IP DA MÁQUINA>`
+
 Algumas informações interessantes: o servidor FTP permite login com o usuário Anonymous, e o nmap já foi capaz de retornar os arquivos disponíveis no diretório.
 
 ![image](https://github.com/user-attachments/assets/e0877fcb-f129-4dbc-889b-115af3c0247c)
@@ -26,7 +28,9 @@ Uma página web sem nada de interessante no primeiro momento.
 
 ![image](https://github.com/user-attachments/assets/360e0625-8a39-4121-ab20-0ed0d18f180b)
 
-Realizando uma varredura por diretórios, encontramos o diretório /files.
+Realizando uma varredura por diretórios, encontramos o diretório /files.\
+
+`gobuster dir -u <endereço da página> -w <wordlist com os diretórios para tentar conexão> -t <número de threads>`
 
 ![image](https://github.com/user-attachments/assets/8d248236-f4f5-4a4f-ab3d-f92c2eba6f03)
 
@@ -45,6 +49,9 @@ Vamos ver o que temos no ftp
 
 ## Exploração
 Sabendo que os conteúdos acessíveis via FTP estão sendo refletidos no webserver, podemos criar um PoC e enviá-lo via FTP para o servidor e fazer o teste de execução de código remoto.
+
+POC: \
+` <?php echo Hello, world!; ?> `
 
 ![image](https://github.com/user-attachments/assets/880c8149-2609-4d14-842f-a8da1814e0d8)
 
@@ -86,6 +93,8 @@ Um arquivo pcapng - esse tipo de arquivo contém informações de capturas de tr
 
 Utilizando a ferramente de preferência (wireshark, tcpdump, tshark), podemos visualizar as informações de conexão armazenadas no arquivo pcapng. Utilizando o tcpdump podemos ver que algumas dessas transmissões de dados foram realizadas por protocolos não-criptografados, o que revela a senha de um dos usuários em texto claro.
 
+`tcpdump -Ar <arquivo.pcapng>` 
+
 Abertura do arquivo
 
 ![image](https://github.com/user-attachments/assets/385d489c-62a6-4f7c-bdc0-9019e47b5fd7)
@@ -107,6 +116,8 @@ planner.sh -> Script com permissões de root, chamando um outro script com permi
 print.sh -> Script com permissões do nosso usuário, nos permitindo fazer edição e alterando as operações que ele executa.
 
 ![image](https://github.com/user-attachments/assets/27b30cde-6351-488f-a6fa-440203e8a55a)
+
+`echo "#!/bin/bash\ncp /root/root.txt /etc/flag_root.txt" > /etc/print.sh`
 
 Para obtermos o conteúdo da flag do root, podemos simplesmente editar o script print.sh para copiar a flag e depois ler o seu conteúdo, e executar o planner.sh que irá fazer o chamado do nosso script malicioso.
 
