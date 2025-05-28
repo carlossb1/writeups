@@ -103,7 +103,7 @@ Sucesso. Obtivemos acesso de usuário na máquina, e a flag user.txt
 
 Diretório suspeito - scripts
 
-planner.sh -> Script com permissões de root, chamando um outro script com permissões do nosso usuário.
+planner.sh -> Script com permissões de root, chamando um outro script com permissões do nosso usuário.\
 print.sh -> Script com permissões do nosso usuário, nos permitindo fazer edição e alterando as operações que ele executa.
 
 ![image](https://github.com/user-attachments/assets/27b30cde-6351-488f-a6fa-440203e8a55a)
