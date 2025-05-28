@@ -8,7 +8,7 @@ Tópico: Web / Linux
 
 Essa room é bem simples, envolvendo transferência de arquivos via FTP para um diretório que está hospedando um servidor com backend em PHP, obtendo execução de código remoto e assim conseguindo acesso ao webserver.
 
-A parte de escalação de privilégio também é um cenário simples, vemos alguns arquivos suspeitos, e através da análise conseguimos obter a senha de um usuário, e depois de autenticados como esse usuário, abusar de um cronjob com permissões de root que faz chamadas à um script externo.
+A parte de escalação de privilégio também é um cenário simples, vemos alguns arquivos suspeitos, e através da análise conseguimos obter a senha de um usuário, e após autenticação como as credenciais desse usuário, abusar de um script com permissões de root que faz chamadas à um script externo.
 
 ## Enumeração
 
