@@ -127,8 +127,30 @@ print.sh -> Script com permissões do nosso usuário, nos permitindo fazer ediç
 
 `echo "#!/bin/bash\ncp /root/root.txt /etc/flag_root.txt" > /etc/print.sh`
 
-Para obtermos o conteúdo da flag do root, podemos simplesmente editar o script print.sh para copiar a flag e depois ler o seu conteúdo, e executar o planner.sh que irá fazer o chamado do nosso script malicioso.
 
 ![image](https://github.com/user-attachments/assets/754b4da6-d2fb-40d9-9722-f0b0f0e2feb8)
 
 
+## Rootando a máquina
+
+Para obtermos o conteúdo da flag do root, podemos simplesmente editar o script print.sh para copiar a flag e depois ler o seu conteúdo, e executar o planner.sh que irá fazer o chamado do nosso script malicioso.
+
+Só que não.
+
+Quando tentei dessa forma, recebi uma shell do próprio lennie:
+
+![250528_20h24m47s_screenshot](https://github.com/user-attachments/assets/bee19447-ab7b-49e4-8c85-69d01b3e2039)
+
+Pra minha sorte, eu tinha aberto um listener novo, e antes de executar o script novamente, recebi uma nova shell - dessa vez, como root. Algo estava ativando o script.
+
+![250528_20h25m17s_screenshot](https://github.com/user-attachments/assets/9909196b-21dd-4a42-b90c-b72ec187c317)
+
+Enumerando os cronjobs da máquina com o pspy [https://github.com/DominicBreuker/pspy], vimos que existe um cronjob ativando o planner.sh, preservando os privilégios de root, e foi esse cara que enviou a shell pra gente.
+
+![250528_20h20m20s_screenshot](https://github.com/user-attachments/assets/4a21c87b-979a-417e-8d45-b8c22e04e4ce)
+
+## Conclusão
+
+Fiquei particularmente feliz com meu desempenho nessa máquina, levei cerca de 40 minutos para finalizar - meu menor tempo em uma máquina boot to root até hoje. É bem legal ver que com a constância você passa a identificar os caminhos de ataque com relativa facilidade, e agora escrevendo os passos executados, me dei conta da quantidade de conhecimentos diferentes que obtive nos últimos meses e fui realizando as etapas num flow quase que natural. A constância realmente dá resultados.
+
+O que mais curti foi que praticamente todas as últimas máquinas que resolvi envolviam abuso de SUID pra escalação de privilégios, então por vício acabei me prendendo um pouco nisso e demorei pra identificar o cronjob sendo executado. Essa máquina serviu pra me lembrar de prestar atenção em outros detalhes antes de sair pulando pro GTFIOBINS.
